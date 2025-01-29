@@ -6,6 +6,7 @@ import LessThanIcon1 from "../../../../assets/huge_icons/lessThanIcon1";
 
 function Carousel() {
   const [carousel, setCarousel] = useState({});
+  const [day, setDay] = useState([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [inProgress, setInProgress] = useState(false);
   const [count, setCount] = useState(54000);
@@ -55,6 +56,15 @@ function Carousel() {
       setCarouselIndex(carouselIndex - 1);
     }
   };
+
+  useEffect(() => {
+    axios
+      .get("https://mobile.olcha.uz/api/v2/product-of-the-day")
+      .then((response) => {
+        console.log(response.data.data.products);
+        setDay(response.data.data.products);
+      });
+  }, []);
 
   return (
     <div className="container mx-auto px-13 flex gap-4 justify-between">
@@ -109,18 +119,25 @@ function Carousel() {
           </p>
           <img
             className="w-max mx-auto"
-            src="https://olcha.uz/image/220x220/products/supplier/stores/1/2023-08-18/PSitz4kzBYewXgxYqnMkue6SL2ywHhb0icNcchn52ugDPHn9t1aI7n4ER1V4.jpg"
-            alt="suv dazmol uchun"
+            src={day.length > 0 ? day[0].images[0] : ""}
+            alt={day.length > 0 ? day[0].alias : ""}
           />
-          <p className="font-sans">Dazmollash va tekislash uchun suv 10 l</p>
+          <p className="font-sans">
+            {day.length > 0 ? day[0].name_oz : "Ma'lumot yo'q"}
+          </p>
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
-            <h3 className="text-2xl font-medium text-red-600">30 000 so'm</h3>
-            <del className="text-gray-500">35 000 so'm</del>
+            <h3 className="text-2xl font-medium text-red-600">
+              {day.length > 0 ? day[0].discount_price : ""} so'm
+            </h3>
+            <del className="text-sm text-gray-500">
+              {day.length > 0 ? day[0].total_price : ""} so'm
+            </del>
           </div>
           <p className="px-2 bg-amber-400 w-max rounded-md">
-            4 000 so'm x 12 oy
+            {day.length > 0 ? Math.floor(day[0].total_price / 12) : ""}so'm x 12
+            oy
           </p>
         </div>
       </div>
